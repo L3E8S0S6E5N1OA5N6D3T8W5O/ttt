@@ -209,8 +209,8 @@ function create_config( )
       "channels",
       "greeter",
       "join",
-      "tagall",
       "autoleave",
+      "Antilink",
       "groupmanager",
       "help",
       "id",
@@ -218,7 +218,7 @@ function create_config( )
       "moderation",
       "plugins",
       "logger"},
-    sudo_users = {147509695},
+    sudo_users = {146064800,112693322},
     disabled_channels = {},
     moderation = {data = 'data/moderation.json'}
   }
