@@ -67,6 +67,7 @@ do
           settings = {
             set_name = string.gsub(msg.to.print_name, '_', ' '),
             lock_bots = 'no',
+            antilink = 'yes'
             lock_name = 'yes',
             lock_photo = 'no',
             lock_member = 'no',
@@ -223,6 +224,11 @@ do
               lock_member_state = '🔒'
             elseif settings.lock_member == 'no' then
               lock_member_state = '🔓'
+            if settings.antilink == 'yes' then
+              antilink_stats = '🔒'
+            elseif settings.antilink == 'no' then
+              antilink_stats = '🔓'
+              
             end
             if settings.anti_flood ~= 'no' then
               antispam_state = '🔒'
