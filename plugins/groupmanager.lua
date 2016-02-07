@@ -12,17 +12,17 @@ do
     return send_large_msg(get_receiver(msg),'Newest generated invite link for '..msg.to.title..' is:\n'..result)
   end
 
-  local function set_group_photo(msg, success, result)
+  local function S_group_photo(msg, success, result)
     local data = load_data(_config.moderation.data)
     if success then
       local file = 'data/photos/chat_photo_'..msg.to.id..'.jpg'
       print('File downloaded to:', result)
       os.rename(result, file)
       print('File moved to:', file)
-      chat_set_photo (get_receiver(msg), file, ok_cb, false)
-      data[tostring(msg.to.id)]['settings']['set_photo'] = file
+      chat_S_photo (get_receiver(msg), file, ok_cb, false)
+      data[tostring(msg.to.id)]['Stings']['S_photo'] = file
       save_data(_config.moderation.data, data)
-      data[tostring(msg.to.id)]['settings']['lock_photo'] = 'yes'
+      data[tostring(msg.to.id)]['Stings']['L_photo'] = 'yes'
       save_data(_config.moderation.data, data)
       send_large_msg(get_receiver(msg), 'Photo saved!', ok_cb, false)
     else
@@ -39,7 +39,7 @@ do
     return string.gsub(msg.to.print_name, '_', ' ')..':\n\n'..about
   end
 
-  -- media handler. needed by group_photo_lock
+  -- media handler. needed by group_photo_L
   local function pre_process(msg)
     if not msg.text and msg.media then
       msg.text = '['..msg.media.type..']'
@@ -57,19 +57,19 @@ do
         create_group_chat (msg.from.print_name, matches[2], ok_cb, false)
 	      return 'Group '..string.gsub(matches[2], '_', ' ')..' has been created.'
       -- add a group to be moderated
-      elseif matches[1] == 'start' and is_admin(msg.from.id, msg.to.id) then
+      elseif matches[1] == 'addgp' and is_admin(msg.from.id, msg.to.id) then
         if data[tostring(msg.to.id)] then
           return 'Group is already added.'
         end
         -- create data array in moderation.json
         data[tostring(msg.to.id)] = {
           moderators ={},
-          settings = {
-            set_name = string.gsub(msg.to.print_name, '_', ' '),
-            lock_bots = 'no',
-            lock_name = 'yes',
-            lock_photo = 'no',
-            lock_member = 'no',
+          Stings = {
+            S_name = string.gsub(msg.to.print_name, '_', ' '),
+            L_bots = 'no',
+            L_name = 'yes',
+            L_photo = 'no',
+            L_member = 'no',
             anti_flood = 'ban',
             welcome = 'group',
             sticker = 'ok',
@@ -78,7 +78,7 @@ do
         save_data(_config.moderation.data, data)
         return 'Group has been added.'
       -- remove group from moderation
-      elseif matches[1] == 'remgroup' and is_admin(msg.from.id, msg.to.id) then
+      elseif matches[1] == 'remgp' and is_admin(msg.from.id, msg.to.id) then
         if not data[tostring(msg.to.id)] then
           return 'Group is not added.'
         end
@@ -89,26 +89,26 @@ do
 
       if msg.media and is_chat_msg(msg) and is_mod(msg.from.id, msg.to.id) then
         if msg.media.type == 'photo' and data[tostring(msg.to.id)] then
-          if data[tostring(msg.to.id)]['settings']['set_photo'] == 'waiting' then
-            load_photo(msg.id, set_group_photo, msg)
+          if data[tostring(msg.to.id)]['Stings']['S_photo'] == 'waiting' then
+            load_photo(msg.id, S_group_photo, msg)
           end
         end
       end
 
       if data[tostring(msg.to.id)] then
 
-        local settings = data[tostring(msg.to.id)]['settings']
+        local Stings = data[tostring(msg.to.id)]['Stings']
 
-        if matches[1] == 'setabout' and matches[2] and is_mod(msg.from.id, msg.to.id) then
+        if matches[1] == 'Sabout' and matches[2] and is_mod(msg.from.id, msg.to.id) then
 	        data[tostring(msg.to.id)]['description'] = matches[2]
 	        save_data(_config.moderation.data, data)
-	        return 'Set group description to:\n'..matches[2]
+	        return 'S group description to:\n'..matches[2]
         elseif matches[1] == 'about' then
           return get_description(msg, data)
-        elseif matches[1] == 'setrules' and is_mod(msg.from.id, msg.to.id) then
+        elseif matches[1] == 'Srules' and is_mod(msg.from.id, msg.to.id) then
 	        data[tostring(msg.to.id)]['rules'] = matches[2]
 	        save_data(_config.moderation.data, data)
-	        return 'Set group rules to:\n'..matches[2]
+	        return 'S group rules to:\n'..matches[2]
         elseif matches[1] == 'rules' then
           if not data[tostring(msg.to.id)]['rules'] then
             return 'No rules available.'
@@ -116,7 +116,7 @@ do
           local rules = data[tostring(msg.to.id)]['rules']
           local rules = string.gsub(msg.to.print_name, '_', ' ')..' rules:\n\n'..rules
           return rules
-        -- group link {get|set}
+        -- group link {get|S}
         elseif matches[1] == 'link' then
           if matches[2] == 'get' then
             if data[tostring(msg.to.id)]['link'] then
@@ -124,150 +124,150 @@ do
               local link = data[tostring(msg.to.id)]['link']
               return about..'\n\n'..link
             else
-              return 'Invite link does not exist.\nTry !link set to generate.'
+              return 'Invite link does not exist.\nTry !link S to generate.'
             end
-          elseif matches[2] == 'set' and is_mod(msg.from.id, msg.to.id) then
+          elseif matches[2] == 'S' and is_mod(msg.from.id, msg.to.id) then
             msgr = export_chat_link(get_receiver(msg), export_chat_link_cb, {data=data, msg=msg})
           end
 	      elseif matches[1] == 'group' then
           -- L {bot|name|member|photo|sticker}
           if matches[2] == 'L' then
             if matches[3] == 'bot' and is_mod(msg.from.id, msg.to.id) then
-	            if settings.lock_bots == 'yes' then
-                return 'Group is already locked from bots.'
+	            if Stings.L_bots == 'yes' then
+                return 'Group is already Led from bots.'
 	            else
-                settings.lock_bots = 'yes'
+                Stings.L_bots = 'yes'
                 save_data(_config.moderation.data, data)
-                return 'Group is locked from bots.'
+                return 'Group is Led from bots.'
 	            end
             elseif matches[3] == 'name' and is_mod(msg.from.id, msg.to.id) then
-	            if settings.lock_name == 'yes' then
-                return 'Group name is already locked'
+	            if Stings.L_name == 'yes' then
+                return 'Group name is already Led'
 	            else
-                settings.lock_name = 'yes'
+                Stings.L_name = 'yes'
                 save_data(_config.moderation.data, data)
-                settings.set_name = string.gsub(msg.to.print_name, '_', ' ')
+                Stings.S_name = string.gsub(msg.to.print_name, '_', ' ')
                 save_data(_config.moderation.data, data)
-	              return 'Group name has been locked'
+	              return 'Group name has been Led'
 	            end
             elseif matches[3] == 'member' and is_mod(msg.from.id, msg.to.id) then
-	            if settings.lock_member == 'yes' then
-                return 'Group members are already locked'
+	            if Stings.L_member == 'yes' then
+                return 'Group members are already Led'
 	            else
-                settings.lock_member = 'yes'
+                Stings.L_member = 'yes'
                 save_data(_config.moderation.data, data)
 	            end
-	            return 'Group members has been locked'
+	            return 'Group members has been Led'
             elseif matches[3] == 'photo' and is_mod(msg.from.id, msg.to.id) then
-	            if settings.lock_photo == 'yes' then
-                return 'Group photo is already locked'
+	            if Stings.L_photo == 'yes' then
+                return 'Group photo is already Led'
 	            else
-                settings.set_photo = 'waiting'
+                Stings.S_photo = 'waiting'
                 save_data(_config.moderation.data, data)
 	            end
               return 'Please send me the group photo now'
             end
-          -- U {bot|name|member|photo|sticker}
-		      elseif matches[2] == 'U' then
+          -- unL {bot|name|member|photo|sticker}
+		      elseif matches[2] == 'unL' then
             if matches[3] == 'bot' and is_mod(msg.from.id, msg.to.id) then
-	            if settings.lock_bots == 'no' then
+	            if Stings.L_bots == 'no' then
                 return 'Bots are allowed to enter group.'
 	            else
-                settings.lock_bots = 'no'
+                Stings.L_bots = 'no'
                 save_data(_config.moderation.data, data)
                 return 'Group is open for bots.'
 	            end
             elseif matches[3] == 'name' and is_mod(msg.from.id, msg.to.id) then
-	            if settings.lock_name == 'no' then
-                return 'Group name is already unlocked'
+	            if Stings.L_name == 'no' then
+                return 'Group name is already unLed'
 	            else
-                settings.lock_name = 'no'
+                Stings.L_name = 'no'
                 save_data(_config.moderation.data, data)
-                return 'Group name has been unlocked'
+                return 'Group name has been unLed'
 	            end
             elseif matches[3] == 'member' and is_mod(msg.from.id, msg.to.id) then
-	            if settings.lock_member == 'no' then
-                return 'Group members are not locked'
+	            if Stings.L_member == 'no' then
+                return 'Group members are not Led'
 	            else
-                settings.lock_member = 'no'
+                Stings.L_member = 'no'
                 save_data(_config.moderation.data, data)
-                return 'Group members has been unlocked'
+                return 'Group members has been unLed'
 	            end
             elseif matches[3] == 'photo' and is_mod(msg.from.id, msg.to.id) then
-	            if settings.lock_photo == 'no' then
-                return 'Group photo is not locked'
+	            if Stings.L_photo == 'no' then
+                return 'Group photo is not Led'
 	            else
-                settings.lock_photo = 'no'
+                Stings.L_photo = 'no'
                 save_data(_config.moderation.data, data)
-                return 'Group photo has been unlocked'
+                return 'Group photo has been unLed'
 	            end
             end
-          -- view group settings
-          elseif matches[2] == 'settings' and is_mod(msg.from.id, msg.to.id) then
-            if settings.lock_bots == 'yes' then
-              lock_bots_state = 'ðŸ”’'
-            elseif settings.lock_bots == 'no' then
-              lock_bots_state = 'ðŸ”“'
+          -- view group Stings
+          elseif matches[2] == 'Stings' and is_mod(msg.from.id, msg.to.id) then
+            if Stings.L_bots == 'yes' then
+              L_bots_state = '🔒'
+            elseif Stings.L_bots == 'no' then
+              L_bots_state = '🔓'
             end
-            if settings.lock_name == 'yes' then
-              lock_name_state = 'ðŸ”’'
-            elseif settings.lock_name == 'no' then
-              lock_name_state = 'ðŸ”“'
+            if Stings.L_name == 'yes' then
+              L_name_state = '🔒'
+            elseif Stings.L_name == 'no' then
+              L_name_state = '🔓'
             end
-            if settings.lock_photo == 'yes' then
-              lock_photo_state = 'ðŸ”’'
-            elseif settings.lock_photo == 'no' then
-              lock_photo_state = 'ðŸ”“'
+            if Stings.L_photo == 'yes' then
+              L_photo_state = '🔒'
+            elseif Stings.L_photo == 'no' then
+              L_photo_state = '🔓'
             end
-            if settings.lock_member == 'yes' then
-              lock_member_state = 'ðŸ”’'
-            elseif settings.lock_member == 'no' then
-              lock_member_state = 'ðŸ”“'
+            if Stings.L_member == 'yes' then
+              L_member_state = '🔒'
+            elseif Stings.L_member == 'no' then
+              L_member_state = '🔓'
             end
-            if settings.anti_flood ~= 'no' then
-              antispam_state = 'ðŸ”’'
-            elseif settings.anti_flood == 'no' then
-              antispam_state = 'ðŸ”“'
+            if Stings.anti_flood ~= 'no' then
+              antispam_state = '🔒'
+            elseif Stings.anti_flood == 'no' then
+              antispam_state = '🔓'
             end
-            if settings.welcome ~= 'no' then
-              greeting_state = 'ðŸ”’'
-            elseif settings.welcome == 'no' then
-              greeting_state = 'ðŸ”“'
+            if Stings.welcome ~= 'no' then
+              greeting_state = '🔒'
+            elseif Stings.welcome == 'no' then
+              greeting_state = '🔓'
             end
-            if settings.sticker ~= 'ok' then
-              sticker_state = 'ðŸ”’'
-            elseif settings.sticker == 'ok' then
-              sticker_state = 'ðŸ”“'
+            if Stings.sticker ~= 'ok' then
+              sticker_state = '🔒'
+            elseif Stings.sticker == 'ok' then
+              sticker_state = '🔓'
             end
-            local text = 'Group settings:\n'
-                  ..'\n'..lock_bots_state..' L group from bot : '..settings.lock_bots
-                  ..'\n'..lock_name_state..' L group name : '..settings.lock_name
-                  ..'\n'..lock_photo_state..' L group photo : '..settings.lock_photo
-                  ..'\n'..lock_member_state..' L group member : '..settings.lock_member
-                  ..'\n'..antispam_state..' Spam and Flood protection : '..settings.anti_flood
-                  ..'\n'..sticker_state..' Sticker policy : '..settings.sticker
-                  ..'\n'..greeting_state..' Welcome message : '..settings.welcome
+            local text = 'Group Stings:\n'
+                  ..'\n'..L_bots_state..' L group from bot : '..Stings.L_bots
+                  ..'\n'..L_name_state..' L group name : '..Stings.L_name
+                  ..'\n'..L_photo_state..' L group photo : '..Stings.L_photo
+                  ..'\n'..L_member_state..' L group member : '..Stings.L_member
+                  ..'\n'..antispam_state..' Spam and Flood protection : '..Stings.anti_flood
+                  ..'\n'..sticker_state..' Sticker policy : '..Stings.sticker
+                  ..'\n'..greeting_state..' Welcome message : '..Stings.welcome
             return text
 		      end
         elseif matches[1] == 'sticker' then
           if matches[2] == 'warn' then
-            if settings.sticker ~= 'warn' then
-              settings.sticker = 'warn'
+            if Stings.sticker ~= 'warn' then
+              Stings.sticker = 'warn'
               save_data(_config.moderation.data, data)
             end
             return 'Stickers already prohibited.\n'
                    ..'Sender will be warned first, then kicked for second violation.'
           elseif matches[2] == 'kick' then
-            if settings.sticker ~= 'kick' then
-              settings.sticker = 'kick'
+            if Stings.sticker ~= 'kick' then
+              Stings.sticker = 'kick'
               save_data(_config.moderation.data, data)
             end
             return 'Stickers already prohibited.\nSender will be kicked!'
           elseif matches[2] == 'ok' then
-            if settings.sticker == 'ok' then
+            if Stings.sticker == 'ok' then
               return 'Sticker restriction is not enabled.'
             else
-              settings.sticker = 'ok'
+              Stings.sticker = 'ok'
               save_data(_config.moderation.data, data)
               return 'Sticker restriction has been disabled.'
             end
@@ -277,21 +277,21 @@ do
           if not msg.service then
             return 'Are you trying to troll me?'
           end
-          if settings.lock_name == 'yes' then
-            if settings.set_name ~= tostring(msg.to.print_name) then
-              rename_chat(get_receiver(msg), settings.set_name, ok_cb, false)
+          if Stings.L_name == 'yes' then
+            if Stings.S_name ~= tostring(msg.to.print_name) then
+              rename_chat(get_receiver(msg), Stings.S_name, ok_cb, false)
             end
-          elseif settings.lock_name == 'no' then
+          elseif Stings.L_name == 'no' then
             return nil
           end
-		    -- set group name
-		    elseif matches[1] == 'setname' and is_mod(msg.from.id, msg.to.id) then
-          settings.set_name = string.gsub(matches[2], '_', ' ')
+		    -- S group name
+		    elseif matches[1] == 'Sname' and is_mod(msg.from.id, msg.to.id) then
+          Stings.S_name = string.gsub(matches[2], '_', ' ')
           save_data(_config.moderation.data, data)
-          rename_chat(get_receiver(msg), settings.set_name, ok_cb, false)
-		    -- set group photo
-		    elseif matches[1] == 'setphoto' and is_mod(msg.from.id, msg.to.id) then
-          settings.set_photo = 'waiting'
+          rename_chat(get_receiver(msg), Stings.S_name, ok_cb, false)
+		    -- S group photo
+		    elseif matches[1] == 'Sphoto' and is_mod(msg.from.id, msg.to.id) then
+          Stings.S_photo = 'waiting'
           save_data(_config.moderation.data, data)
           return 'Please send me new group photo now'
         -- if a user is added to group
@@ -300,12 +300,12 @@ do
             return 'Are you trying to troll me?'
           end
           local user = 'user#id'..msg.action.user.id
-          if settings.lock_member == 'yes' then
+          if Stings.L_member == 'yes' then
             chat_del_user(get_receiver(msg), user, ok_cb, true)
           -- no APIs bot are allowed to enter chat group, except invited by mods.
-          elseif settings.lock_bots == 'yes' and msg.action.user.flags == 4352 and not is_mod(msg.from.id, msg.to.id) then
+          elseif Stings.L_bots == 'yes' and msg.action.user.flags == 4352 and not is_mod(msg.from.id, msg.to.id) then
             chat_del_user(get_receiver(msg), user, ok_cb, true)
-          elseif settings.lock_bots == 'no' or settings.lock_member == 'no' then
+          elseif Stings.L_bots == 'no' or Stings.L_member == 'no' then
             return nil
           end
         -- if sticker is sent
@@ -314,19 +314,19 @@ do
           local chat_id = msg.to.id
           local sticker_hash = 'mer_sticker:'..chat_id..':'..user_id
           local is_sticker_offender = redis:get(sticker_hash)
-          if settings.sticker == 'warn' then
+          if Stings.sticker == 'warn' then
             if is_sticker_offender then
               chat_del_user(get_receiver(msg), 'user#id'..user_id, ok_cb, true)
               redis:del(sticker_hash)
               return 'You have been warned to not sending sticker into this group!'
             elseif not is_sticker_offender then
-              redis:set(sticker_hash, true)
+              redis:S(sticker_hash, true)
               return 'DO NOT send sticker into this group!\nThis is a WARNING, next time you will be kicked!'
             end
-          elseif settings.sticker == 'kick' then
+          elseif Stings.sticker == 'kick' then
             chat_del_user(get_receiver(msg), 'user#id'..user_id, ok_cb, true)
             return 'DO NOT send sticker into this group!'
-          elseif settings.sticker == 'ok' then
+          elseif Stings.sticker == 'ok' then
             return nil
           end
         -- if group photo is deleted
@@ -334,9 +334,9 @@ do
           if not msg.service then
             return 'Are you trying to troll me?'
           end
-          if settings.lock_photo == 'yes' then
-            chat_set_photo (get_receiver(msg), settings.set_photo, ok_cb, false)
-          elseif settings.lock_photo == 'no' then
+          if Stings.L_photo == 'yes' then
+            chat_S_photo (get_receiver(msg), Stings.S_photo, ok_cb, false)
+          elseif Stings.L_photo == 'no' then
             return nil
           end
 		    -- if group photo is changed
@@ -344,9 +344,9 @@ do
           if not msg.service then
             return 'Are you trying to troll me?'
           end
-          if settings.lock_photo == 'yes' then
-            chat_set_photo (get_receiver(msg), settings.set_photo, ok_cb, false)
-          elseif settings.lock_photo == 'no' then
+          if Stings.L_photo == 'yes' then
+            chat_S_photo (get_receiver(msg), Stings.S_photo, ok_cb, false)
+          elseif Stings.L_photo == 'no' then
             return nil
           end
         end
@@ -361,20 +361,20 @@ do
     usage = {
       admin = {
         '!cgp <group_name> : Make/create a new group.',
-        '!start : Add group to moderation list.',
-        '!remgroup : Remove group from moderation list.'
+        '!addgp : Add group to moderation list.',
+        '!remgp : Remove group from moderation list.'
       },
       moderator = {
-        '!group <L|U> bot : {Dis}allow APIs bots.',
-        '!group <L|U> member : L/U group member.',
-        '!group <L|U> name : L/U group name.',
-        '!group <L|U> photo : L/U group photo.',
-        '!group settings : Show group settings.',
-        '!link <set> : Generate/revoke invite link.',
-        '!setabout <description> : Set group description.',
-        '!setname <new_name> : Set group name.',
-        '!setphoto : Set group photo.',
-        '!setrules <rules> : Set group rules.',
+        '!group <L|unL> bot : {Dis}allow APIs bots.',
+        '!group <L|unL> member : L/unL group member.',
+        '!group <L|unL> name : L/unL group name.',
+        '!group <L|unL> photo : L/unL group photo.',
+        '!group Stings : Show group Stings.',
+        '(link) <S> : Generate/revoke invite link.',
+        '(Sabout) <description> : S group description.',
+        '(Sname) <new_name> : S group name.',
+        '(Sphoto) : S group photo.',
+        '!Srules <rules> : S group rules.',
         '!sticker warn : Sticker restriction, sender will be warned for the first violation.',
         '!sticker kick : Sticker restriction, sender will be kick.',
         '!sticker ok : Disable sticker restriction.'
@@ -387,21 +387,21 @@ do
     },
     patterns = {
       '^!(about)$',
-      '^$(start)$',
+      '^!(addgp)$',
       '%[(audio)%]',
       '%[(document)%]',
       '^!(group) (L) (.*)$',
-      '^!(group) (settings)$',
-      '^!(group) (U) (.*)$',
+      '^!(group) (Stings)$',
+      '^!(group) (unL) (.*)$',
       '^!(link) (.*)$',
       '^!(cgp) (.*)$',
       '%[(photo)%]',
-      '^!(remgroup)$',
+      '^!(remgp)$',
       '^!(rules)$',
-      '^!(setabout) (.*)$',
-      '^(setname) (.*)$',
-      '^!(setphoto)$',
-      '^!(setrules) (.*)$',
+      '^!(Sabout) (.*)$',
+      '^!(Sname) (.*)$',
+      '^!(Sphoto)$',
+      '^!(Srules) (.*)$',
       '^!(sticker) (.*)$',
       '^!!tgservice (.+)$',
       '%[(video)%]'
