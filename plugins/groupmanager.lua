@@ -251,6 +251,7 @@ do
                   ..'\n'..lock_photo_state..' Lock group photo : '..settings.lock_photo
                   ..'\n'..lock_member_state..' Lock group member : '..settings.lock_member
                   ..'\n'..antispam_state..' Spam and Flood protection : '..settings.anti_flood
+                  ..'\n'..Antilink_state..'Link protection :'..settings.antilink
                   ..'\n'..sticker_state..' Sticker policy : '..settings.sticker
                   ..'\n'..greeting_state..' Welcome message : '..settings.welcome
             return text
