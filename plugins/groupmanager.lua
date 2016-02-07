@@ -315,6 +315,20 @@ do
           elseif settings.lock_bots == 'no' or settings.lock_member == 'no' then
             return nil
           end
+          
+      
+                    
+     if settings.antilink == 'yes' then    
+                       if not is_mod(msg) then
+    
+    
+                    chat_del_user('chat#id'..msg.to.id, 'user#id'..msg.from.id, ok_cb, true)
+                           local msgads = 'ForbiddenAdText'
+                              local receiver = msg.to.id
+                                 send_large_msg('chat#id'..receiver, msg.."\n", ok_cb, false)
+	
+end
+end
         -- if sticker is sent
         elseif msg.media and msg.media.caption == 'sticker.webp' and not is_sudo(msg.from.id) then
           local user_id = msg.from.id
