@@ -206,6 +206,7 @@ function create_config( )
   config = {
     enabled_plugins = {
       "banhammer",
+      "brodcast"
       "channels",
       "greeter",
       "join",
