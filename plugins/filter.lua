@@ -67,7 +67,7 @@ local function run(msg, matches)
 	elseif matches[1] == "ilter" and matches[2] == ">" then
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_mod(msg) then
+			if not is_sudo(msg) then
 				return "شما مدير نيستيد"
 			else
 				local value = 'msg'
@@ -79,7 +79,7 @@ local function run(msg, matches)
 	elseif matches[1] == "ilter" and matches[2] == "+" then
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_mod(msg) then
+			if not is_sudo(msg) then
 				return "شما مدير نيستيد"
 			else
 				local value = 'kick'
@@ -91,7 +91,7 @@ local function run(msg, matches)
 	elseif matches[1] == "ilter" and matches[2] == "-" then
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_mod(msg) then
+			if not is_sudo(msg) then
 				return "شما مدير نيستيد"
 			else
 				local value = 'none'
@@ -104,11 +104,7 @@ local function run(msg, matches)
 		return get_filter_act(msg, matches[3]:lower())
 	else
 		if is_sudo(msg) then
-			return
-		elseif is_admin(msg) then
-			return
-		elseif is_mod(msg) then
-			return
+		return
 		elseif tonumber(msg.from.id) == tonumber(our_id) then
 			return
 		else
