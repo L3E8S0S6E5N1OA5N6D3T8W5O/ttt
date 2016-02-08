@@ -32,11 +32,11 @@ do
       -- Check if is enabled
       for k2, v2 in pairs(_config.enabled_plugins) do
         if v == v2..'.lua' then
-          status = '✅'
+          status = '🔴'
         end
         pact = pact+1
       end
-      if not only_enabled or status == '✅' then
+      if not only_enabled or status == '🔴' then
         -- get the name
         v = string.match (v, "(.*)%.lua")
         text = text..status..'  '..v..'\n'
