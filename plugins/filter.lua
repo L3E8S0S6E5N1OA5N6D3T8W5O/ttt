@@ -67,9 +67,7 @@ local function run(msg, matches)
 	elseif matches[1] == "ilter" and matches[2] == ">" then
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_sudo(msg) then
-				return "شما مدير نيستيد"
-			else
+			
 				local value = 'msg'
 				local name = string.sub(matches[3]:lower(), 1, 1000)
 				local text = save_filter(msg, name, value)
@@ -79,9 +77,7 @@ local function run(msg, matches)
 	elseif matches[1] == "ilter" and matches[2] == "+" then
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_sudo(msg) then
-				return "شما مدير نيستيد"
-			else
+		
 				local value = 'kick'
 				local name = string.sub(matches[3]:lower(), 1, 1000)
 				local text = save_filter(msg, name, value)
@@ -91,9 +87,7 @@ local function run(msg, matches)
 	elseif matches[1] == "ilter" and matches[2] == "-" then
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
-			if not is_sudo(msg) then
-				return "شما مدير نيستيد"
-			else
+			
 				local value = 'none'
 				local name = string.sub(matches[3]:lower(), 1, 1000)
 				local text = save_filter(msg, name, value)
