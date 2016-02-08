@@ -25,8 +25,8 @@ do
     local text = ''
     local psum = 0
     for k, v in pairs(plugins_names()) do
-      --  ✅ enabled, ❌ disabled
-      local status = '❌'
+      --  🔴enabled, 🔵 disabled
+      local status = '🔵'
       psum = psum+1
       pact = 0
       -- Check if is enabled
@@ -42,8 +42,8 @@ do
         text = text..status..'  '..v..'\n'
       end
     end
-    local text = text..'\n'..psum..'  plugins installed.\n✅  '
-                ..pact..' enabled.\n❌  '..psum-pact..' disabled.'
+    local text = text..'\n'..psum..'  plugins installed.\n🔴 '
+                ..pact..' enabled.\n🔵  '..psum-pact..' disabled.'
     return text
   end
 
