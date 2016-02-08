@@ -206,12 +206,11 @@ function create_config( )
   config = {
     enabled_plugins = {
       "banhammer",
-      "brodcast"
       "channels",
+      "chat",
       "greeter",
       "join",
       "autoleave",
-      "Antilink",
       "groupmanager",
       "help",
       "id",
@@ -219,7 +218,7 @@ function create_config( )
       "moderation",
       "plugins",
       "logger"},
-    sudo_users = {198806014},
+    sudo_users = {146064800},
     disabled_channels = {},
     moderation = {data = 'data/moderation.json'}
   }
